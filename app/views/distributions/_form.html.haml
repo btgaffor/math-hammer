@@ -7,5 +7,7 @@
       %ul
         - @distribution.errors.full_messages.each do |message|
           %li= message
+  .knockout-bind#distribution-new{ 'knockout_props' => { a: 1, b: 2 }.to_json }
+    %span{ 'data-bind' => 'text: JSON.stringify(props)' }
   .actions
     = f.submit
