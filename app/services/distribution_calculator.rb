@@ -59,7 +59,7 @@ class DistributionCalculator
         roll_result.
         select { |roll| roll >= roll_needed }.
         count
-      successes += reroll_dice(roll_result, successes, params['reroll']) unless params['reroll'].nil?
+      successes += reroll_dice(roll_result, successes, params['reroll'], roll_needed) unless params['reroll'].nil?
 
       successes
     }.curry,

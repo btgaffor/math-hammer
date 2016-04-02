@@ -20,30 +20,49 @@
   %div ----------------------
 
   .rolls{ 'data-bind' => "foreach: ajax_params.tests()[0].rolls"}
-    .utility-buttons
-      %button{ 'data-bind' => "click: $parent.remove_roll" } Remove
-      %button{ 'data-bind' => "click: $parent.add_before"} Add Before
     %div
       %b{ 'data-bind' => "text: roll_type" }
+      %button{ 'data-bind' => "click: $parent.remove_roll" } Remove
+      %button{ 'data-bind' => "click: $parent.add_before"} Add Before
 
     %div{ 'data-bind' => "if: roll_type == 'to hit shooting'"}
       %div{ 'data-bind' => "with: params"}
         %label Ballistic Skill
         %input{ 'type' => 'number', 'data-bind' => "attr: { id: 'ballistic_skill_' + $index() }, value: ballistic_skill" }
+        %br
+        %label Reroll
+        %select{ 'data-bind' => "value: reroll" }
+          %option{ 'value' => 'none' } None
+          %option{ 'value' => 'all' } All
+          %option{ 'value' => 'ones' } Ones
 
     %div{ 'data-bind' => "if: roll_type == 'to hit assaulting'"}
       %div{ 'data-bind' => "with: params"}
         %label Attacker's Weapon Skill
         %input{ 'type' => 'number', 'data-bind' => "attr: { id: 'attackers_ws_' + $index() }, value: attackers_ws" }
+        %br
         %label Defender's Weapon Skill
         %input{ 'type' => 'number', 'data-bind' => "attr: { id: 'defenders_ws_' + $index() }, value: defenders_ws" }
+        %br
+        %label Reroll
+        %select{ 'data-bind' => "value: reroll" }
+          %option{ 'value' => 'none' } None
+          %option{ 'value' => 'all' } All
+          %option{ 'value' => 'ones' } Ones
 
     %div{ 'data-bind' => "if: roll_type == 'to wound'"}
       %div{ 'data-bind' => "with: params"}
         %label Strength
         %input{ 'type' => 'number', 'data-bind' => "attr: { id: 'strength_' + $index() }, value: strength" }
+        %br
         %label Toughness
         %input{ 'type' => 'number', 'data-bind' => "attr: { id: 'toughness_' + $index() }, value: toughness" }
+        %br
+        %label Reroll
+        %select{ 'data-bind' => "value: reroll" }
+          %option{ 'value' => 'none' } None
+          %option{ 'value' => 'all' } All
+          %option{ 'value' => 'ones' } Ones
 
     %div{ 'data-bind' => "if: roll_type == 'armor penetration'"}
       %div{ 'data-bind' => "with: params"}

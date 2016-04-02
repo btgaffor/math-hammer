@@ -54,6 +54,7 @@ class MathHammer.DistributionForm
           {
             params: {
               ballistic_skill: ko.observable
+              reroll: ko.observable 'none'
             }
           }
         when 'to hit assaulting'
@@ -61,6 +62,7 @@ class MathHammer.DistributionForm
             params: {
               attackers_ws: ko.observable
               defenders_ws: ko.observable
+              reroll: ko.observable 'none'
             }
           }
         when 'to wound'
@@ -68,6 +70,7 @@ class MathHammer.DistributionForm
             params: {
               strength: ko.observable
               toughness: ko.observable
+              reroll: ko.observable 'none'
             }
           }
         when 'armor penetration'
