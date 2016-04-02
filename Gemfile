@@ -35,6 +35,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # views
 gem 'haml'
 gem 'haml-rails'
+gem 'simple_form'
 
 # javascript
 gem 'knockoutjs-rails'
