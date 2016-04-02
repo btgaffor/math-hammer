@@ -1,4 +1,4 @@
-= form_for(@distribution) do |f|
+-#= form_for(@distribution) do |f|
   -#- if @distribution.errors.any?
     #error_explanation
       %h2
@@ -7,7 +7,10 @@
       %ul
         - @distribution.errors.full_messages.each do |message|
           %li= message
-  .knockout-bind#distribution-new{ 'knockout_props' => { a: 1, b: 2 }.to_json }
-    %span{ 'data-bind' => 'text: JSON.stringify(props)' }
-  .actions
-    = f.submit
+  -#.actions
+    -#= f.submit
+
+.knockout-bind#distribution-new{ 'knockout_props' => distribution_new_props }
+  %div{ 'data-bind' => "text: JSON.stringify(props)" }
+  %button{ 'data-bind' => "click: perform_calculation" }
+    Perform Calculation

@@ -4,7 +4,12 @@
 
 class MathHammer.DistributionForm
   constructor: (@props) ->
+    throw new Error unless (@ROLL_TYPES = @props.ROLL_TYPES)
+    console.log @ROLL_TYPES
+
+  perform_calculation: (data, event) =>
     console.log @props
+    event.preventDefault() && false
 
 $ ->
   target = $('#distribution-new')

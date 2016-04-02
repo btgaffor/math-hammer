@@ -24,6 +24,12 @@ class DistributionsController < ApplicationController
   # POST /distributions
   # POST /distributions.json
   def create
+    respond_to do |wants|
+      wants.json {
+        @distribution_calculator = DistributionCalculator.new("test")
+        render json: { success: true }
+      }
+    end
     #@distribution = Distribution.new(distribution_params)
 
     #respond_to do |format|
