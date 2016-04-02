@@ -14,7 +14,6 @@ class DistributionsController < ApplicationController
 
   # GET /distributions/new
   def new
-    @distribution = Distribution.new
   end
 
   # GET /distributions/1/edit
@@ -26,8 +25,8 @@ class DistributionsController < ApplicationController
   def create
     respond_to do |wants|
       wants.json {
-        @distribution_calculator = DistributionCalculator.new("test")
-        render json: { success: true }
+        distribution = DistributionCalculator.new(params).run
+        render json: { success: true, distribution: distribution }
       }
     end
     #@distribution = Distribution.new(distribution_params)
