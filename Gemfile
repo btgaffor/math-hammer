@@ -41,6 +41,7 @@ gem 'simple_form'
 
 # javascript
 gem 'knockoutjs-rails'
+gem 'underscore-rails'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
