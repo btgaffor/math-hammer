@@ -17,12 +17,12 @@
   .dice-to-roll
     %label Number of Dice
     %input{ 'data-bind' => "value: ajax_params.tests()[0].number_of_dice"}
-  .new-roll-type
-    %select{ 'data-bind' => "options: ROLL_TYPES, value: new_roll_type" }
-    %button{ 'data-bind' => "click: add_roll"} Add Roll
+  %div ----------------------
 
   .rolls{ 'data-bind' => "foreach: ajax_params.tests()[0].rolls"}
-    %div ----------------------
+    .utility-buttons
+      %button{ 'data-bind' => "click: $parent.remove_roll" } Remove
+      %button{ 'data-bind' => "click: $parent.add_before"} Add Before
     %div
       %b{ 'data-bind' => "text: roll_type" }
 
@@ -56,6 +56,12 @@
       %div{ 'data-bind' => "with: params"}
         %label Save
         %input{ 'type' => 'number', 'data-bind' => "attr: { id: 'save_' + $index() }, value: save" }
+
+    %div ----------------------
+
+  .new-roll-type
+    %select{ 'data-bind' => "options: ROLL_TYPES, value: new_roll_type" }
+    %button{ 'data-bind' => "click: add_roll"} Add Roll
 
   .actions
     %button{ 'data-bind' => "click: perform_calculation" }

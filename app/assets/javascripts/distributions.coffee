@@ -39,44 +39,58 @@ class MathHammer.DistributionForm
     event.preventDefault() && false
 
   add_roll: =>
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+  add_before: (data) =>
+    array = @ajax_params.tests()[0].rolls
+    array.splice(array.indexOf(data), 0, @roll_to_add())
+
+  roll_to_add: =>
     new_test = { roll_type: @new_roll_type() }
 
-    switch @new_roll_type()
-      when 'to hit shooting'
-        @ajax_params.tests()[0].rolls.push $.extend new_test, {
-          params: {
-            ballistic_skill: ko.observable
+    params_to_add =
+      switch @new_roll_type()
+        when 'to hit shooting'
+          {
+            params: {
+              ballistic_skill: ko.observable
+            }
           }
-        }
-      when 'to hit assaulting'
-        @ajax_params.tests()[0].rolls.push $.extend new_test, {
-          params: {
-            attackers_ws: ko.observable
-            defenders_ws: ko.observable
+        when 'to hit assaulting'
+          {
+            params: {
+              attackers_ws: ko.observable
+              defenders_ws: ko.observable
+            }
           }
-        }
-      when 'to wound'
-        @ajax_params.tests()[0].rolls.push $.extend new_test, {
-          params: {
-            strength: ko.observable
-            toughness: ko.observable
+        when 'to wound'
+          {
+            params: {
+              strength: ko.observable
+              toughness: ko.observable
+            }
           }
-        }
-      when 'armor penetration'
-        @ajax_params.tests()[0].rolls.push $.extend new_test, {
-          params: {
-            strength: ko.observable
-            armor_value: ko.observable
+        when 'armor penetration'
+          {
+            params: {
+              strength: ko.observable
+              armor_value: ko.observable
+            }
           }
-        }
-      when 'save'
-        @ajax_params.tests()[0].rolls.push $.extend new_test, {
-          params: {
-            save: ko.observable
+        when 'save'
+          {
+            params: {
+              save: ko.observable
+            }
           }
-        }
-      else
-        throw new Error('unknown roll type')
+        else
+          throw new Error('unknown roll type')
+
+    $.extend new_test, params_to_add
+
+
+  remove_roll: (roll) =>
+    @ajax_params.tests()[0].rolls.remove(roll)
 
 $ ->
   target = $('#distribution-new')
