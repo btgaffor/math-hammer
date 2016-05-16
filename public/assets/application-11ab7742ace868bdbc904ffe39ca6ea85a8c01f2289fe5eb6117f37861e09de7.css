@@ -8803,3 +8803,14 @@ button.close {
     display: none !important;
   }
 }
+/* line 6, /Users/brandon/workspace/mathhammer/app/assets/stylesheets/distributions.scss */
+.rolls .panel .add-button {
+  float: right;
+}
+/* line 9, /Users/brandon/workspace/mathhammer/app/assets/stylesheets/distributions.scss */
+.rolls .panel .remove-button {
+  cursor: pointer;
+  float: right;
+  margin-top: 1px;
+  margin-left: 5px;
+}
