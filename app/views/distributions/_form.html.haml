@@ -31,11 +31,11 @@
       .row
         .col-sm-4.col-sm-offset-4
           .panel.panel-default
+            .panel-heading
+              %b(data-bind="text: roll_type")
+              .remove-button.glyphicon.glyphicon-remove(data-bind="click: $parent.remove_roll")
+              -#.add-button.glyphicon.glyphicon-plus(data-bind="click: $parent.add_before")
             .panel-body
-              %div
-                %b{ 'data-bind' => "text: roll_type" }
-                %button.btn.btn-default{ 'data-bind' => "click: $parent.remove_roll" } Remove
-                %button.btn.btn-default{ 'data-bind' => "click: $parent.add_before"} Add Before
 
               %div{ 'data-bind' => "if: roll_type == 'to hit shooting'"}
                 %div{ 'data-bind' => "with: params"}
