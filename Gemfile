@@ -38,6 +38,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'haml'
 gem 'haml-rails'
 gem 'simple_form'
+gem 'bootstrap-sass', '~> 3.3.6'
 
 # javascript
 gem 'knockoutjs-rails'
