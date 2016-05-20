@@ -2,16 +2,11 @@ class DistributionCalculator
   ROLL_TYPES = {
     'to hit shooting' => lambda { |params, number_of_dice|
       ballistic_skill = params['ballistic_skill'].to_i
+      # TODO
       fail if ballistic_skill > 5
       roll_needed = 7 - ballistic_skill
 
-      roll_result = roll_d6(number_of_dice)
-      successes =
-        roll_result.
-        select { |roll| roll >= roll_needed }.
-        count
-      successes += reroll_dice(roll_result, successes, params['reroll'], roll_needed) if params['reroll'].present?
-      successes
+      roll_d6(number_of_dice, lambda { |roll| roll >= roll_needed }, params['reroll'])
     }.curry,
 
     'to hit assaulting' => lambda { |params, number_of_dice|
@@ -27,14 +22,7 @@ class DistributionCalculator
           5
         end
 
-      roll_result = roll_d6(number_of_dice)
-      successes =
-        roll_result.
-        select { |roll| roll >= roll_needed }.
-        count
-      successes += reroll_dice(roll_result, successes, params['reroll'], roll_needed) if params['reroll'].present?
-
-      successes
+      roll_d6(number_of_dice, lambda { |roll| roll >= roll_needed }, params['reroll'])
     }.curry,
 
     'to wound' => lambda { |params, number_of_dice|
@@ -42,38 +30,25 @@ class DistributionCalculator
       toughness = params['toughness'].to_i
       difference = strength - toughness
       roll_needed =
-        if difference >= -2
-          [4 - difference, 2].max
-        elsif difference == -3
-          -2
+        if difference >= -3
+        [[4 - difference, 2].max, 6].min
         else
-          0
+          7 # can't wound
         end
 
-      roll_result = roll_d6(number_of_dice)
-      successes =
-        roll_result.
-        select { |roll| roll >= roll_needed }.
-        count
-      successes += reroll_dice(roll_result, successes, params['reroll'], roll_needed) if params['reroll'].present?
-
-      successes
+      roll_d6(number_of_dice, lambda { |roll| roll >= roll_needed }, params['reroll'])
     }.curry,
 
     'armor penetration' => lambda { |params, number_of_dice|
       strength = params['strength'].to_i
       armor_value = params['armor_value'].to_i
 
-      roll_d6(number_of_dice).
-        select { |roll| roll + strength >= armor_value }.
-        count
+      roll_d6(number_of_dice, lambda { |roll| roll + strength >= armor_value }, params['reroll'])
     }.curry,
 
     'save' => lambda { |params, number_of_dice|
       save = params['save'].to_i
-      roll_d6(number_of_dice).
-        select { |roll| roll < save }.
-        count
+      roll_d6(number_of_dice, lambda { |roll| roll < save }, params['reroll'])
     }.curry
   }
   
@@ -120,8 +95,14 @@ private
     lambda { |x| x }
   end
 
-  def self.roll_d6(number_of_dice)
-    (0...number_of_dice).map { rand(6) + 1 }
+  def self.roll_d6(number_of_dice, roll_needed, reroll)
+    roll_result = (0...number_of_dice).map { rand(6) + 1 }
+    successes =
+      roll_result.
+      select(&roll_needed).
+      count
+    successes += reroll_dice(roll_result, successes, reroll, roll_needed) if reroll.present?
+    successes
   end
 
   def self.roll_2d6(number_of_rolls)
@@ -139,15 +120,11 @@ private
         count
     end
 
-    rv = 0
     if number_to_reroll > 0
-      rv =
-        self.roll_d6(number_to_reroll).
-        select { |roll| roll >= roll_needed }.
-        count
+      roll_d6(number_to_reroll, roll_needed, nil)
+    else
+      0
     end
-
-    rv
   end
 
 end
