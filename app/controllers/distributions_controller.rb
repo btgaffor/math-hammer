@@ -25,8 +25,12 @@ class DistributionsController < ApplicationController
   def create
     respond_to do |wants|
       wants.json {
-        distribution = DistributionCalculator.new(params).run
-        render json: { success: true, distribution: distribution }
+        begin
+          distribution = DistributionCalculator.new(params).run
+          render json: { success: true, distribution: distribution }
+        rescue
+          render json: { success: false, error: "Error, please try again later." }
+        end
       }
     end
     #@distribution = Distribution.new(distribution_params)

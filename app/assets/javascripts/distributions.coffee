@@ -33,7 +33,7 @@ class MathHammer.DistributionForm
           @distribution(data.distribution)
           $(".current-distribution")[0].scrollIntoView(true)
         else
-          alert data
+          @distribution(data.error)
     )
 
 
