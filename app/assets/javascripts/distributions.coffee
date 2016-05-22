@@ -54,37 +54,37 @@ class MathHammer.DistributionForm
         when 'to hit shooting'
           {
             params: {
-              ballistic_skill: ko.observable
-              reroll: ko.observable 'none'
+              ballistic_skill: ko.observable()
+              reroll: ko.observable('none')
             }
           }
         when 'to hit assaulting'
           {
             params: {
-              attackers_ws: ko.observable
-              defenders_ws: ko.observable
-              reroll: ko.observable 'none'
+              attackers_ws: ko.observable()
+              defenders_ws: ko.observable()
+              reroll: ko.observable('none')
             }
           }
         when 'to wound'
           {
             params: {
-              strength: ko.observable
-              toughness: ko.observable
-              reroll: ko.observable 'none'
+              strength: ko.observable()
+              toughness: ko.observable()
+              reroll: ko.observable('none')
             }
           }
         when 'armor penetration'
           {
             params: {
-              strength: ko.observable
-              armor_value: ko.observable
+              strength: ko.observable()
+              armor_value: ko.observable()
             }
           }
         when 'save'
           {
             params: {
-              save: ko.observable
+              save: ko.observable()
             }
           }
         else
