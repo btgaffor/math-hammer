@@ -13,6 +13,7 @@
 %form.knockout-bind#distribution-new{ 'knockout_props' => distribution_new_props }
   .container-fluid
     .row
+      -# general tiles
       .col-sm-4
         .row
           .col-sm-12
@@ -33,11 +34,21 @@
             .panel.panel-default
               .panel-heading New Roll
               .panel-body
+                .roll-presets
+                  %label Presets
+                  %div
+                    %button.btn.btn-default(data-bind="click: preset_shooting_infantry") Shooting Infantry
+                    %button.btn.btn-default(data-bind="click: preset_assaulting_infantry") Assaulting Infantry
+                  %div
+                    %button.btn.btn-default(data-bind="click: preset_shooting_vehicles") Shooting Vehicles
+                    %button.btn.btn-default(data-bind="click: preset_assaulting_vehicles") Assaulting Vehicles
                 .new-roll-type
                   .form-group
                     %label(for="new_roll_type") New Roll Type
                     %select#new_roll_type.form-control{ 'data-bind' => "options: ROLL_TYPES, value: new_roll_type" }
                   %button.btn.btn-default{ 'data-bind' => "click: add_roll"} Add Roll
+
+      -# rolls
       .col-sm-4
         .rolls{ 'data-bind' => "foreach: ajax_params.tests()[0].rolls"}
           .row
@@ -105,10 +116,6 @@
                       .form-group
                         %label(data-bind="attr: { for: 'save_' + $index() }") Save
                         %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'save_' + $index() }, value: save" }
-
-
-
-
 
     .row
       .col-sm-4.col-sm-offset-4

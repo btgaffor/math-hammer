@@ -96,6 +96,56 @@ class MathHammer.DistributionForm
   remove_roll: (roll) =>
     @ajax_params.tests()[0].rolls.remove(roll)
 
+  preset_shooting_infantry: =>
+    @ajax_params.tests()[0].rolls([])
+
+    @new_roll_type('to hit shooting')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+    @new_roll_type('to wound')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+    @new_roll_type('save')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+  preset_assaulting_infantry: =>
+    @ajax_params.tests()[0].rolls([])
+
+    @new_roll_type('to hit assaulting')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+    @new_roll_type('to wound')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+    @new_roll_type('save')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+  preset_shooting_vehicles: =>
+    @ajax_params.tests()[0].rolls([])
+
+    @new_roll_type('to hit shooting')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+    @new_roll_type('armor penetration')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+    @new_roll_type('save')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+  preset_assaulting_vehicles: =>
+    @ajax_params.tests()[0].rolls([])
+
+    @new_roll_type('to hit assaulting')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+    @ajax_params.tests()[0].rolls().slice(-1)[0].params.defenders_ws('0')
+    window.v = @ajax_params.tests()[0].rolls().slice(-1)[0]
+
+    @new_roll_type('armor penetration')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
+    @new_roll_type('save')
+    @ajax_params.tests()[0].rolls.push @roll_to_add()
+
 $ ->
   target = $('#distribution-new')
   props = target.attr('knockout_props')
