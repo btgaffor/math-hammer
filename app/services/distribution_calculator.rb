@@ -58,26 +58,25 @@ class DistributionCalculator
   end
 
   def run
+    run_offensive
+  end
+
+  def run_offensive
     string_rv = ''
     @tests.each do |_index, test|
-      distribution = Hash.new { |h,k| h[k] = 0.0 }
-
       number_of_dice = test['number_of_dice'].to_i
 
-      # create pipe to pass rolls through
-      roll_pipe =
-        test['rolls'].
-        map { |_index, roll_definition| ROLL_TYPES[roll_definition['roll_type']].(roll_definition['params']) }.
-        reduce(self.class.identity) { |memo, roll_lambda| self.class.pipe(memo, roll_lambda) }
+      roll_pipe = roll_pipe(test['rolls'].values)
 
-      @times_to_roll.times do
-        distribution[roll_pipe.(number_of_dice)] += 1
-      end
-      puts distribution
+      distribution =
+        Transducer.new(Array.new(@times_to_roll, number_of_dice)).
+        map(lambda { |number| roll_pipe.(number) }).
+        reduce(lambda { |memo, result| memo[result] += 1; memo }, Hash.new { |h,k| h[k] = 0.0 })
+
       number_of_dice.downto(0).reduce(0) do |memo, n|
         this_percent = (distribution[n] / @times_to_roll) * 100
         rv = memo + this_percent
-        string_rv << (sprintf '%02d %6.2f%% %6.2f%% %s', n, this_percent, rv, '#' * ((distribution[n] / @times_to_roll) * 100))
+        string_rv << (sprintf '%02d %6.2f%% %6.2f%% %s', n, this_percent, rv, '#' * this_percent)
         string_rv << '<br>'
         rv
       end
@@ -85,14 +84,20 @@ class DistributionCalculator
     string_rv
   end
 
+  def run_defensive
+
+  end
+
 private
+
+  def roll_pipe(rolls)
+    Transducer.new(rolls).
+      map(lambda { |roll_definition| ROLL_TYPES[roll_definition['roll_type']].(roll_definition['params']) }).
+      reduce(lambda { |memo, roll_proc| if memo.present? then self.class.pipe(memo, roll_proc) else roll_proc end }, nil)
+  end
 
   def self.pipe (lambda1, lambda2)
     lambda { |*params| lambda2.(lambda1.(*params)) }
-  end
-
-  def self.identity
-    lambda { |x| x }
   end
 
   def self.roll_d6(number_of_dice, roll_needed, reroll)
@@ -126,5 +131,4 @@ private
       0
     end
   end
-
 end
