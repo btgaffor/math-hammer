@@ -13,97 +13,102 @@
 %form.knockout-bind#distribution-new{ 'knockout_props' => distribution_new_props }
   .container-fluid
     .row
-      .col-sm-4.col-sm-offset-4
-        .panel.panel-default
-          .panel-heading
-            Options
-          .panel-body
-            .iterations
-              .form-group
-                %label Iterations
-                %input.form-control{ 'data-bind' => "value: ajax_params.times_to_roll"}
-            .dice-to-roll
-              .form-group
-                %label Number of Dice
-                %input.form-control{ 'data-bind' => "value: ajax_params.tests()[0].number_of_dice"}
+      .col-sm-4
+        .row
+          .col-sm-12
+            .panel.panel-default
+              .panel-heading
+                Options
+              .panel-body
+                .iterations
+                  .form-group
+                    %label Iterations
+                    %input.form-control{ 'data-bind' => "value: ajax_params.times_to_roll"}
+                .dice-to-roll
+                  .form-group
+                    %label Number of Dice
+                    %input.form-control{ 'data-bind' => "value: ajax_params.tests()[0].number_of_dice"}
+        .row
+          .col-sm-12
+            .panel.panel-default
+              .panel-heading New Roll
+              .panel-body
+                .new-roll-type
+                  .form-group
+                    %label(for="new_roll_type") New Roll Type
+                    %select#new_roll_type.form-control{ 'data-bind' => "options: ROLL_TYPES, value: new_roll_type" }
+                  %button.btn.btn-default{ 'data-bind' => "click: add_roll"} Add Roll
+      .col-sm-4
+        .rolls{ 'data-bind' => "foreach: ajax_params.tests()[0].rolls"}
+          .row
+            .col-sm-12
+              .panel.panel-default
+                .panel-heading
+                  %b(data-bind="text: roll_type")
+                  .remove-button.glyphicon.glyphicon-remove(data-bind="click: $parent.remove_roll")
+                  -#.add-button.glyphicon.glyphicon-plus(data-bind="click: $parent.add_before")
+                .panel-body
 
-    .rolls{ 'data-bind' => "foreach: ajax_params.tests()[0].rolls"}
-      .row
-        .col-sm-4.col-sm-offset-4
-          .panel.panel-default
-            .panel-heading
-              %b(data-bind="text: roll_type")
-              .remove-button.glyphicon.glyphicon-remove(data-bind="click: $parent.remove_roll")
-              -#.add-button.glyphicon.glyphicon-plus(data-bind="click: $parent.add_before")
-            .panel-body
+                  %div{ 'data-bind' => "if: roll_type == 'to hit shooting'"}
+                    %div{ 'data-bind' => "with: params"}
+                      .form-group
+                        %label(data-bind="attr: { for: 'ballistic_skill_' + $index() }") Ballistic Skill
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'ballistic_skill_' + $index() }, value: ballistic_skill" }
+                      .form-group
+                        %label(data-bind="attr: { for: 'reroll_' + $index() }") Reroll
+                        %select.form-control{ 'data-bind' => "attr: { id: 'reroll_' + $index() }, value: reroll" }
+                          %option{ 'value' => 'none' } None
+                          %option{ 'value' => 'all' } All
+                          %option{ 'value' => 'ones' } Ones
 
-              %div{ 'data-bind' => "if: roll_type == 'to hit shooting'"}
-                %div{ 'data-bind' => "with: params"}
-                  .form-group
-                    %label(data-bind="attr: { for: 'ballistic_skill_' + $index() }") Ballistic Skill
-                    %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'ballistic_skill_' + $index() }, value: ballistic_skill" }
-                  .form-group
-                    %label(data-bind="attr: { for: 'reroll_' + $index() }") Reroll
-                    %select.form-control{ 'data-bind' => "attr: { id: 'reroll_' + $index() }, value: reroll" }
-                      %option{ 'value' => 'none' } None
-                      %option{ 'value' => 'all' } All
-                      %option{ 'value' => 'ones' } Ones
+                  %div{ 'data-bind' => "if: roll_type == 'to hit assaulting'"}
+                    %div{ 'data-bind' => "with: params"}
+                      .form-group
+                        %label(data-bind="attr: { for: 'attackers_ws_' + $index() }") Attacker's Weapon Skill
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'attackers_ws_' + $index() }, value: attackers_ws" }
+                      .form-group
+                        %label(data-bind="attr: { for: 'defenders_ws_' + $index() }") Defender's Weapon Skill
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'defenders_ws_' + $index() }, value: defenders_ws" }
+                      .form-group
+                        %label(data-bind="attr: { for: 'reroll_' + $index() }") Reroll
+                        %select.form-control{ 'data-bind' => "attr: { id: 'reroll_' + $index() }, value: reroll" }
+                          %option{ 'value' => 'none' } None
+                          %option{ 'value' => 'all' } All
+                          %option{ 'value' => 'ones' } Ones
 
-              %div{ 'data-bind' => "if: roll_type == 'to hit assaulting'"}
-                %div{ 'data-bind' => "with: params"}
-                  .form-group
-                    %label(data-bind="attr: { for: 'attackers_ws_' + $index() }") Attacker's Weapon Skill
-                    %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'attackers_ws_' + $index() }, value: attackers_ws" }
-                  .form-group
-                    %label(data-bind="attr: { for: 'defenders_ws_' + $index() }") Defender's Weapon Skill
-                    %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'defenders_ws_' + $index() }, value: defenders_ws" }
-                  .form-group
-                    %label(data-bind="attr: { for: 'reroll_' + $index() }") Reroll
-                    %select.form-control{ 'data-bind' => "attr: { id: 'reroll_' + $index() }, value: reroll" }
-                      %option{ 'value' => 'none' } None
-                      %option{ 'value' => 'all' } All
-                      %option{ 'value' => 'ones' } Ones
+                  %div{ 'data-bind' => "if: roll_type == 'to wound'"}
+                    %div{ 'data-bind' => "with: params"}
+                      .form-group
+                        %label(data-bind="attr: { for: 'strength_' + $index() }") Strength
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'strength_' + $index() }, value: strength" }
+                      .form-group
+                        %label(data-bind="attr: { for: 'toughness_' + $index() }") Toughness
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'toughness_' + $index() }, value: toughness" }
+                      .form-group
+                        %label(data-bind="attr: { for: 'reroll_' + $index() }") Reroll
+                        %select.form-control{ 'data-bind' => "attr: { id: 'reroll_' + $index() }, value: reroll" }
+                          %option{ 'value' => 'none' } None
+                          %option{ 'value' => 'all' } All
+                          %option{ 'value' => 'ones' } Ones
 
-              %div{ 'data-bind' => "if: roll_type == 'to wound'"}
-                %div{ 'data-bind' => "with: params"}
-                  .form-group
-                    %label(data-bind="attr: { for: 'strength_' + $index() }") Strength
-                    %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'strength_' + $index() }, value: strength" }
-                  .form-group
-                    %label(data-bind="attr: { for: 'toughness_' + $index() }") Toughness
-                    %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'toughness_' + $index() }, value: toughness" }
-                  .form-group
-                    %label(data-bind="attr: { for: 'reroll_' + $index() }") Reroll
-                    %select.form-control{ 'data-bind' => "attr: { id: 'reroll_' + $index() }, value: reroll" }
-                      %option{ 'value' => 'none' } None
-                      %option{ 'value' => 'all' } All
-                      %option{ 'value' => 'ones' } Ones
+                  %div{ 'data-bind' => "if: roll_type == 'armor penetration'"}
+                    %div{ 'data-bind' => "with: params"}
+                      .form-group
+                        %label(data-bind="attr: { for: 'strength_' + $index() }") Strength
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'strength_' + $index() }, value: strength" }
+                      .form-group
+                        %label(data-bind="attr: { for: 'armor_value_' + $index() }") Armor Value
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'armor_value_' + $index() }, value: armor_value" }
 
-              %div{ 'data-bind' => "if: roll_type == 'armor penetration'"}
-                %div{ 'data-bind' => "with: params"}
-                  .form-group
-                    %label(data-bind="attr: { for: 'strength_' + $index() }") Strength
-                    %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'strength_' + $index() }, value: strength" }
-                  .form-group
-                    %label(data-bind="attr: { for: 'armor_value_' + $index() }") Armor Value
-                    %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'armor_value_' + $index() }, value: armor_value" }
+                  %div{ 'data-bind' => "if: roll_type == 'save'"}
+                    %div{ 'data-bind' => "with: params"}
+                      .form-group
+                        %label(data-bind="attr: { for: 'save_' + $index() }") Save
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'save_' + $index() }, value: save" }
 
-              %div{ 'data-bind' => "if: roll_type == 'save'"}
-                %div{ 'data-bind' => "with: params"}
-                  .form-group
-                    %label(data-bind="attr: { for: 'save_' + $index() }") Save
-                    %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'save_' + $index() }, value: save" }
 
-    .row
-      .col-sm-4.col-sm-offset-4
-        .panel.panel-default
-          .panel-heading New Roll
-          .panel-body
-            .new-roll-type
-              .form-group
-                %label(for="new_roll_type") New Roll Type
-                %select#new_roll_type.form-control{ 'data-bind' => "options: ROLL_TYPES, value: new_roll_type" }
-              %button.btn.btn-default{ 'data-bind' => "click: add_roll"} Add Roll
+
+
 
     .row
       .col-sm-4.col-sm-offset-4
