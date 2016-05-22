@@ -1,15 +1,3 @@
--#= form_for(@distribution) do |f|
-  -#- if @distribution.errors.any?
-    #error_explanation
-      %h2
-        = pluralize(@distribution.errors.count, "error")
-        prohibited this distribution from being saved:
-      %ul
-        - @distribution.errors.full_messages.each do |message|
-          %li= message
-  -#.actions
-    -#= f.submit
-
 %form.knockout-bind#distribution-new{ 'knockout_props' => distribution_new_props }
   .container-fluid
     .row
