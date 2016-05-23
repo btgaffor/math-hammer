@@ -8814,3 +8814,17 @@ button.close {
   margin-top: 1px;
   margin-left: 5px;
 }
+
+/* line 19, /Users/brandon/workspace/mathhammer/app/assets/stylesheets/distributions.scss */
+.roll-presets div {
+  margin-bottom: 10px;
+}
+/* line 23, /Users/brandon/workspace/mathhammer/app/assets/stylesheets/distributions.scss */
+.roll-presets .btn {
+  margin-right: 3px;
+}
+
+/* line 28, /Users/brandon/workspace/mathhammer/app/assets/stylesheets/distributions.scss */
+.actions {
+  margin-bottom: 10px;
+}

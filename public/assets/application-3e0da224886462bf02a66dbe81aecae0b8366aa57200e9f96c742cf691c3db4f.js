@@ -19808,6 +19808,10 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
   MathHammer.DistributionForm = (function() {
     function DistributionForm(props1) {
       this.props = props1;
+      this.preset_assaulting_vehicles = bind(this.preset_assaulting_vehicles, this);
+      this.preset_shooting_vehicles = bind(this.preset_shooting_vehicles, this);
+      this.preset_assaulting_infantry = bind(this.preset_assaulting_infantry, this);
+      this.preset_shooting_infantry = bind(this.preset_shooting_infantry, this);
       this.remove_roll = bind(this.remove_roll, this);
       this.roll_to_add = bind(this.roll_to_add, this);
       this.add_before = bind(this.add_before, this);
@@ -19818,15 +19822,27 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
         throw new Error;
       }
       this.new_roll_type = ko.observable(this.ROLL_TYPES.first);
-      this.ajax_params = {
+      window.ajax_params = this.ajax_params = {
         times_to_roll: ko.observable(100000),
+        distribution_type: ko.observable('offensive'),
         tests: ko.observableArray([
           {
+            target_wounds: ko.observable(1),
             number_of_dice: ko.observable(1),
             rolls: ko.observableArray([])
           }
         ])
       };
+      this.is_offensive = ko.computed((function(_this) {
+        return function() {
+          return _this.ajax_params.distribution_type() === 'offensive';
+        };
+      })(this));
+      this.is_defensive = ko.computed((function(_this) {
+        return function() {
+          return _this.ajax_params.distribution_type() === 'defensive';
+        };
+      })(this));
       this.distribution = ko.observable('');
     }
 
@@ -19836,9 +19852,10 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
       $.post('/distributions', ko.toJS(this.ajax_params), (function(_this) {
         return function(data) {
           if (!!data.success) {
-            return _this.distribution(data.distribution);
+            _this.distribution(data.distribution);
+            return $(".current-distribution")[0].scrollIntoView(true);
           } else {
-            return alert(data);
+            return _this.distribution(data.error);
           }
         };
       })(this));
@@ -19865,37 +19882,37 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
           case 'to hit shooting':
             return {
               params: {
-                ballistic_skill: ko.observable,
+                ballistic_skill: ko.observable(),
                 reroll: ko.observable('none')
               }
             };
           case 'to hit assaulting':
             return {
               params: {
-                attackers_ws: ko.observable,
-                defenders_ws: ko.observable,
+                attackers_ws: ko.observable(),
+                defenders_ws: ko.observable(),
                 reroll: ko.observable('none')
               }
             };
           case 'to wound':
             return {
               params: {
-                strength: ko.observable,
-                toughness: ko.observable,
+                strength: ko.observable(),
+                toughness: ko.observable(),
                 reroll: ko.observable('none')
               }
             };
           case 'armor penetration':
             return {
               params: {
-                strength: ko.observable,
-                armor_value: ko.observable
+                strength: ko.observable(),
+                armor_value: ko.observable()
               }
             };
           case 'save':
             return {
               params: {
-                save: ko.observable
+                save: ko.observable()
               }
             };
           default:
@@ -19907,6 +19924,48 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
 
     DistributionForm.prototype.remove_roll = function(roll) {
       return this.ajax_params.tests()[0].rolls.remove(roll);
+    };
+
+    DistributionForm.prototype.preset_shooting_infantry = function() {
+      this.ajax_params.tests()[0].rolls([]);
+      this.new_roll_type('to hit shooting');
+      this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+      this.new_roll_type('to wound');
+      this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+      this.new_roll_type('save');
+      return this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+    };
+
+    DistributionForm.prototype.preset_assaulting_infantry = function() {
+      this.ajax_params.tests()[0].rolls([]);
+      this.new_roll_type('to hit assaulting');
+      this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+      this.new_roll_type('to wound');
+      this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+      this.new_roll_type('save');
+      return this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+    };
+
+    DistributionForm.prototype.preset_shooting_vehicles = function() {
+      this.ajax_params.tests()[0].rolls([]);
+      this.new_roll_type('to hit shooting');
+      this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+      this.new_roll_type('armor penetration');
+      this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+      this.new_roll_type('save');
+      return this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+    };
+
+    DistributionForm.prototype.preset_assaulting_vehicles = function() {
+      this.ajax_params.tests()[0].rolls([]);
+      this.new_roll_type('to hit assaulting');
+      this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+      this.ajax_params.tests()[0].rolls().slice(-1)[0].params.defenders_ws('0');
+      window.v = this.ajax_params.tests()[0].rolls().slice(-1)[0];
+      this.new_roll_type('armor penetration');
+      this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
+      this.new_roll_type('save');
+      return this.ajax_params.tests()[0].rolls.push(this.roll_to_add());
     };
 
     return DistributionForm;
