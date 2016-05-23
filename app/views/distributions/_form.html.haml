@@ -13,10 +13,20 @@
                   .form-group
                     %label Iterations
                     %input.form-control{ 'data-bind' => "value: ajax_params.times_to_roll"}
-                .dice-to-roll
+                .dice-to-roll(data-bind="visible: is_offensive")
                   .form-group
                     %label Number of Dice
                     %input.form-control{ 'data-bind' => "value: ajax_params.tests()[0].number_of_dice"}
+                .target-wounds(data-bind="visible: is_defensive")
+                  .form-group
+                    %label Reciving Unit's Wounds
+                    %input.form-control(type="number" data-bind="value: ajax_params.tests()[0].target_wounds")
+                .distribution-type
+                  .form-group
+                    %label Distribution Type
+                    %select.form-control(data-bind="value: ajax_params.distribution_type")
+                      %option(value='offensive') How many wounds will I do?
+                      %option(value='defensive') How many shots will it take to kill me?
         .row
           .col-sm-12
             .panel.panel-default

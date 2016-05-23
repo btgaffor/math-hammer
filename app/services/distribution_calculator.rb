@@ -54,11 +54,16 @@ class DistributionCalculator
   
   def initialize(input)
     @times_to_roll = input['times_to_roll'].to_i
+    @distribution_type = input['distribution_type']
     @tests = input['tests']
   end
 
   def run
-    run_offensive
+    if @distribution_type == 'offensive'
+      run_offensive
+    elsif @distribution_type == 'defensive'
+      run_defensive
+    end
   end
 
   def run_offensive
@@ -85,7 +90,38 @@ class DistributionCalculator
   end
 
   def run_defensive
+    string_rv = ''
+    @tests.each do |_index, test|
+      target_wounds = test['target_wounds'].to_i
+      roll_pipe = roll_pipe(test['rolls'].values)
 
+      max_shots = 0
+
+      distribution =
+        Transducer.new(Array.new(@times_to_roll, target_wounds)).
+        map(lambda { |number|
+          wound_count = 0
+          total_shots = 0
+          while wound_count < target_wounds do
+            total_shots += 1
+            wound_count += roll_pipe.(1)
+          end
+
+          max_shots = total_shots if total_shots > max_shots
+
+          total_shots
+        }).
+        reduce(lambda { |memo, result| memo[result] += 1; memo }, Hash.new { |h,k| h[k] = 0.0 })
+
+      (1..max_shots).reduce(0) do |memo, n|
+        this_percent = (distribution[n] / @times_to_roll) * 100
+        rv = memo + this_percent
+        string_rv << (sprintf '%02d %6.2f%% %6.2f%% %s', n, this_percent, rv, '#' * this_percent)
+        string_rv << '<br>'
+        rv
+      end
+    end
+    string_rv
   end
 
 private

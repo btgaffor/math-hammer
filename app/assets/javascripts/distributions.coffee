@@ -9,15 +9,23 @@ class MathHammer.DistributionForm
 
     @new_roll_type = ko.observable(@ROLL_TYPES.first)
 
-    @ajax_params = {
+    window.ajax_params = @ajax_params = {
       times_to_roll: ko.observable(100000)
+      distribution_type: ko.observable('offensive')
       tests: ko.observableArray [
         {
-          number_of_dice: ko.observable 1
-          rolls: ko.observableArray []
+          target_wounds: ko.observable(1)
+          number_of_dice: ko.observable(1)
+          rolls: ko.observableArray([])
         }
       ]
     }
+
+    @is_offensive = ko.computed =>
+      @ajax_params.distribution_type() == 'offensive'
+
+    @is_defensive = ko.computed =>
+      @ajax_params.distribution_type() == 'defensive'
 
     @distribution = ko.observable ''
 
