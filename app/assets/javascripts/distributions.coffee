@@ -14,7 +14,6 @@ class MathHammer.DistributionForm
       distribution_type: ko.observable('offensive')
       tests: ko.observableArray [
         {
-          target_wounds: ko.observable(1)
           number_of_dice: ko.observable(1)
           rolls: ko.observableArray([])
         }
@@ -28,6 +27,7 @@ class MathHammer.DistributionForm
       @ajax_params.distribution_type() == 'defensive'
 
     @distribution = ko.observable ''
+    @reset()
 
   perform_calculation: (data, event) =>
     console.log ko.toJS(@ajax_params)
@@ -59,18 +59,10 @@ class MathHammer.DistributionForm
 
     params_to_add =
       switch @new_roll_type()
-        when 'to hit shooting'
+        when 'to hit'
           {
             params: {
-              ballistic_skill: ko.observable()
-              reroll: ko.observable('none')
-            }
-          }
-        when 'to hit assaulting'
-          {
-            params: {
-              attackers_ws: ko.observable()
-              defenders_ws: ko.observable()
+              skill: ko.observable()
               reroll: ko.observable('none')
             }
           }
@@ -82,17 +74,18 @@ class MathHammer.DistributionForm
               reroll: ko.observable('none')
             }
           }
-        when 'armor penetration'
-          {
-            params: {
-              strength: ko.observable()
-              armor_value: ko.observable()
-            }
-          }
         when 'save'
           {
             params: {
               save: ko.observable()
+              armor_piercing: ko.observable()
+            }
+          }
+        when 'damage'
+          {
+            params: {
+              target_wounds: ko.observable()
+              damage: ko.observable()
             }
           }
         else
@@ -104,10 +97,10 @@ class MathHammer.DistributionForm
   remove_roll: (roll) =>
     @ajax_params.tests()[0].rolls.remove(roll)
 
-  preset_shooting_infantry: =>
+  reset: =>
     @ajax_params.tests()[0].rolls([])
 
-    @new_roll_type('to hit shooting')
+    @new_roll_type('to hit')
     @ajax_params.tests()[0].rolls.push @roll_to_add()
 
     @new_roll_type('to wound')
@@ -116,42 +109,7 @@ class MathHammer.DistributionForm
     @new_roll_type('save')
     @ajax_params.tests()[0].rolls.push @roll_to_add()
 
-  preset_assaulting_infantry: =>
-    @ajax_params.tests()[0].rolls([])
-
-    @new_roll_type('to hit assaulting')
-    @ajax_params.tests()[0].rolls.push @roll_to_add()
-
-    @new_roll_type('to wound')
-    @ajax_params.tests()[0].rolls.push @roll_to_add()
-
-    @new_roll_type('save')
-    @ajax_params.tests()[0].rolls.push @roll_to_add()
-
-  preset_shooting_vehicles: =>
-    @ajax_params.tests()[0].rolls([])
-
-    @new_roll_type('to hit shooting')
-    @ajax_params.tests()[0].rolls.push @roll_to_add()
-
-    @new_roll_type('armor penetration')
-    @ajax_params.tests()[0].rolls.push @roll_to_add()
-
-    @new_roll_type('save')
-    @ajax_params.tests()[0].rolls.push @roll_to_add()
-
-  preset_assaulting_vehicles: =>
-    @ajax_params.tests()[0].rolls([])
-
-    @new_roll_type('to hit assaulting')
-    @ajax_params.tests()[0].rolls.push @roll_to_add()
-    @ajax_params.tests()[0].rolls().slice(-1)[0].params.defenders_ws('0')
-    window.v = @ajax_params.tests()[0].rolls().slice(-1)[0]
-
-    @new_roll_type('armor penetration')
-    @ajax_params.tests()[0].rolls.push @roll_to_add()
-
-    @new_roll_type('save')
+    @new_roll_type('damage')
     @ajax_params.tests()[0].rolls.push @roll_to_add()
 
 $ ->

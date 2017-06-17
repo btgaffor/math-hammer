@@ -1,57 +1,69 @@
 class DistributionCalculator
   ROLL_TYPES = {
-    'to hit shooting' => lambda { |params, number_of_dice|
-      ballistic_skill = params['ballistic_skill'].to_i
-      # TODO
-      fail if ballistic_skill > 5
-      roll_needed = 7 - ballistic_skill
-
-      roll_d6(number_of_dice, lambda { |roll| roll >= roll_needed }, params['reroll'])
-    }.curry,
-
-    'to hit assaulting' => lambda { |params, number_of_dice|
-      attackers_ws = params['attackers_ws'].to_i
-      defenders_ws = params['defenders_ws'].to_i
-
-      roll_needed =
-        if attackers_ws > defenders_ws
-          3
-        elsif attackers_ws <= defenders_ws * 2
-          4
-        else
-          5
-        end
-
-      roll_d6(number_of_dice, lambda { |roll| roll >= roll_needed }, params['reroll'])
+    'to hit' => lambda { |params, number_of_dice|
+      skill = params['skill'].to_i
+      roll_d6(number_of_dice, ->(roll) { roll >= skill }, params['reroll'])
     }.curry,
 
     'to wound' => lambda { |params, number_of_dice|
       strength = params['strength'].to_i
       toughness = params['toughness'].to_i
-      difference = strength - toughness
+
       roll_needed =
-        if difference >= -3
-        [[4 - difference, 2].max, 6].min
+        if strength >= toughness * 2
+          2
+        elsif strength > toughness
+          3
+        elsif strength <= toughness / 2
+          6
+        elsif strength < toughness
+          5
         else
-          7 # can't wound
+          4
         end
 
-      roll_d6(number_of_dice, lambda { |roll| roll >= roll_needed }, params['reroll'])
-    }.curry,
-
-    'armor penetration' => lambda { |params, number_of_dice|
-      strength = params['strength'].to_i
-      armor_value = params['armor_value'].to_i
-
-      roll_d6(number_of_dice, lambda { |roll| roll + strength >= armor_value }, params['reroll'])
+      roll_d6(number_of_dice, ->(roll) { roll >= roll_needed }, params['reroll'])
     }.curry,
 
     'save' => lambda { |params, number_of_dice|
-      save = params['save'].to_i
-      roll_d6(number_of_dice, lambda { |roll| roll < save }, params['reroll'])
+      save = params['save'].to_i - params['armor_piercing'].to_i
+      roll_d6(number_of_dice, ->(roll) { roll < save }, params['reroll'])
+    }.curry,
+
+    'damage' => lambda { |params, number_of_dice|
+      target_wounds = params['target_wounds'].to_i
+      damage = params['damage']
+
+      d_index = damage.index('d')
+      if d_index
+        rolls = damage[0...d_index].to_i
+        sides = damage[d_index + 1..-1].to_i
+      end
+
+      wounds_inflicted = 0
+      current_target_wounds = target_wounds
+
+      number_of_dice.times do
+        wounds_to_apply =
+          if d_index
+            (0...rolls).map { rand(sides) + 1 }.reduce(:+)
+          else
+            damage.to_i
+          end
+
+        if wounds_to_apply < current_target_wounds
+          current_target_wounds -= wounds_to_apply
+          wounds_inflicted += wounds_to_apply
+        else
+          wounds_inflicted += current_target_wounds # can't spill over
+          current_target_wounds = target_wounds # assume there's another model
+        end
+      end
+
+      wounds_inflicted
     }.curry
-  }
-  
+  }.freeze
+
   def initialize(input)
     @times_to_roll = input['times_to_roll'].to_i
     @distribution_type = input['distribution_type']
@@ -69,16 +81,34 @@ class DistributionCalculator
   def run_offensive
     string_rv = ''
     @tests.each do |_index, test|
-      number_of_dice = test['number_of_dice'].to_i
-
       roll_pipe = roll_pipe(test['rolls'].values)
 
       distribution =
-        Transducer.new(Array.new(@times_to_roll, number_of_dice)).
+        Transducer.new(Array.new(@times_to_roll) { |i| roll_xdy(test['number_of_dice']) }).
         map(lambda { |number| roll_pipe.(number) }).
         reduce(lambda { |memo, result| memo[result] += 1; memo }, Hash.new { |h,k| h[k] = 0.0 })
 
-      number_of_dice.downto(0).reduce(0) do |memo, n|
+      d_index = test['number_of_dice'].index('d')
+      max_number_of_dice =
+        if d_index
+          test['number_of_dice'][0...d_index].to_i * test['number_of_dice'][d_index + 1..-1].to_i
+        else
+          test['number_of_dice'].to_i
+        end
+
+      damage = @tests["0"]["rolls"].values.find { |roll| roll["roll_type"] == "damage" }["params"]["damage"]
+      if damage
+        d_index = damage.index('d')
+        max_damage =
+          if d_index
+            damage[0...d_index].to_i * damage[d_index + 1..-1].to_i
+          else
+            damage.to_i
+          end
+        max_number_of_dice *= max_damage
+      end
+
+      max_number_of_dice.downto(0).reduce(0) do |memo, n|
         this_percent = (distribution[n] / @times_to_roll) * 100
         rv = memo + this_percent
         string_rv << (sprintf '%02d %6.2f%% %6.2f%% %s', n, this_percent, rv, '#' * this_percent)
@@ -125,6 +155,17 @@ class DistributionCalculator
   end
 
 private
+
+  def roll_xdy(input)
+    d_index = input.index('d')
+    if d_index
+      rolls = input[0...d_index].to_i
+      sides = input[d_index + 1..-1].to_i
+      (0...rolls).map { rand(sides) + 1 }.reduce(:+)
+    else
+      input.to_i
+    end
+  end
 
   def roll_pipe(rolls)
     Transducer.new(rolls).

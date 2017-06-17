@@ -15,13 +15,13 @@
                     %input.form-control{ 'data-bind' => "value: ajax_params.times_to_roll"}
                 .dice-to-roll(data-bind="visible: is_offensive")
                   .form-group
-                    %label Number of Dice
+                    %label Number of Attacks (e.g. 1 or 2d6)
                     %input.form-control{ 'data-bind' => "value: ajax_params.tests()[0].number_of_dice"}
-                .target-wounds(data-bind="visible: is_defensive")
+                -# .target-wounds(data-bind="visible: is_defensive")
                   .form-group
                     %label Reciving Unit's Wounds
                     %input.form-control(type="number" data-bind="value: ajax_params.tests()[0].target_wounds")
-                .distribution-type
+                -# .distribution-type
                   .form-group
                     %label Distribution Type
                     %select.form-control(data-bind="value: ajax_params.distribution_type")
@@ -33,14 +33,16 @@
               .panel-heading New Roll
               .panel-body
                 .roll-presets
-                  %label Presets
+                  -# %label Presets
                   %div
+                    %button.btn.btn-default(data-bind="click: reset") Reset
+                  -# %div
                     %button.btn.btn-default(data-bind="click: preset_shooting_infantry") Shooting Infantry
                     %button.btn.btn-default(data-bind="click: preset_assaulting_infantry") Assaulting Infantry
-                  %div
+                  -# %div
                     %button.btn.btn-default(data-bind="click: preset_shooting_vehicles") Shooting Vehicles
                     %button.btn.btn-default(data-bind="click: preset_assaulting_vehicles") Assaulting Vehicles
-                .new-roll-type
+                -# .new-roll-type
                   .form-group
                     %label(for="new_roll_type") New Roll Type
                     %select#new_roll_type.form-control{ 'data-bind' => "options: ROLL_TYPES, value: new_roll_type" }
@@ -58,26 +60,11 @@
                   -#.add-button.glyphicon.glyphicon-plus(data-bind="click: $parent.add_before")
                 .panel-body
 
-                  %div{ 'data-bind' => "if: roll_type == 'to hit shooting'"}
+                  %div{ 'data-bind' => "if: roll_type == 'to hit'"}
                     %div{ 'data-bind' => "with: params"}
                       .form-group
-                        %label(data-bind="attr: { for: 'ballistic_skill_' + $index() }") Ballistic Skill
-                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'ballistic_skill_' + $index() }, value: ballistic_skill" }
-                      .form-group
-                        %label(data-bind="attr: { for: 'reroll_' + $index() }") Reroll
-                        %select.form-control{ 'data-bind' => "attr: { id: 'reroll_' + $index() }, value: reroll" }
-                          %option{ 'value' => 'none' } None
-                          %option{ 'value' => 'all' } All
-                          %option{ 'value' => 'ones' } Ones
-
-                  %div{ 'data-bind' => "if: roll_type == 'to hit assaulting'"}
-                    %div{ 'data-bind' => "with: params"}
-                      .form-group
-                        %label(data-bind="attr: { for: 'attackers_ws_' + $index() }") Attacker's Weapon Skill
-                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'attackers_ws_' + $index() }, value: attackers_ws" }
-                      .form-group
-                        %label(data-bind="attr: { for: 'defenders_ws_' + $index() }") Defender's Weapon Skill
-                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'defenders_ws_' + $index() }, value: defenders_ws" }
+                        %label(data-bind="attr: { for: 'skill_' + $index() }") Ballistic/Weapon Skill
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'skill_' + $index() }, value: skill" }
                       .form-group
                         %label(data-bind="attr: { for: 'reroll_' + $index() }") Reroll
                         %select.form-control{ 'data-bind' => "attr: { id: 'reroll_' + $index() }, value: reroll" }
@@ -100,20 +87,23 @@
                           %option{ 'value' => 'all' } All
                           %option{ 'value' => 'ones' } Ones
 
-                  %div{ 'data-bind' => "if: roll_type == 'armor penetration'"}
-                    %div{ 'data-bind' => "with: params"}
-                      .form-group
-                        %label(data-bind="attr: { for: 'strength_' + $index() }") Strength
-                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'strength_' + $index() }, value: strength" }
-                      .form-group
-                        %label(data-bind="attr: { for: 'armor_value_' + $index() }") Armor Value
-                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'armor_value_' + $index() }, value: armor_value" }
-
                   %div{ 'data-bind' => "if: roll_type == 'save'"}
                     %div{ 'data-bind' => "with: params"}
                       .form-group
                         %label(data-bind="attr: { for: 'save_' + $index() }") Save
                         %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'save_' + $index() }, value: save" }
+                      .form-group
+                        %label(data-bind="attr: { for: 'armor_piercing_' + $index() }") Armor Piercing
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'armor_piercing_' + $index() }, value: armor_piercing" }
+
+                  %div{ 'data-bind' => "if: roll_type == 'damage'"}
+                    %div{ 'data-bind' => "with: params"}
+                      .form-group
+                        %label(data-bind="attr: { for: 'target_wounds_' + $index() }") Target Wounds Per Model
+                        %input.form-control{ 'type' => 'number', 'data-bind' => "attr: { id: 'target_wounds_' + $index() }, value: target_wounds" }
+                      .form-group
+                        %label(data-bind="attr: { for: 'damage_' + $index() }") Damage (e.g. 1 or 2d6)
+                        %input.form-control{ 'data-bind' => "attr: { id: 'damage_' + $index() }, value: damage" }
 
     .row
       .col-sm-4.col-sm-offset-4
